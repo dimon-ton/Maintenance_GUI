@@ -1,18 +1,15 @@
 import sqlite3
 
 
-'''
- name = v_name.get()
-    department = v_department.get()
-    machine = v_machine.get()
-    problem = v_problem.get()
-    serial = v_serial.get()
-    phone = v_phone.get()
+# get path of parent directory
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+databse_path = os.path.join(BASE_DIR, 'maintenance.sqlite3')
 
-'''
+
 
 # Create a connection to the database
-conn = sqlite3.connect('maintenance.sqlite3')
+conn = sqlite3.connect(databse_path)
 
 # Create a cursor object
 c = conn.cursor()
@@ -29,6 +26,8 @@ c.execute("""
                 serial TEXT,
                 phone TEXT)""")
 
+
+
 def insert_mtworkorder(tsid, name, department, machine, problem, serial, phone):
     # CREATE
     with conn:
@@ -36,9 +35,6 @@ def insert_mtworkorder(tsid, name, department, machine, problem, serial, phone):
         c.execute(command, (None, tsid, name, department, machine, problem, serial, phone))
 
     conn.commit()
-    print('saved')
-
-# insert_mtworkorder('TS10001', 'ลุง', 'ไอที', 'เครื่องปริ้น', 'ปริ้นไม่ออก', 'SE2365214', '0863254154')
 
 
 
@@ -48,7 +44,22 @@ def view_mtworkorder():
         c.execute(command)
         result = c.fetchall()
 
-    print(result)
     return result
 
-view_mtworkorder()
+
+def update_mtworkorder(tsid, field, newvalue):
+    with conn:
+        command = 'UPDATE mt_workorder SET {} = (?) WHERE tsid = (?)'.format(field)
+        c.execute(command, (newvalue, tsid))
+    conn.commit()
+
+
+
+def delete_mtworkorder(tsid):
+
+    with conn:
+        command = 'DELETE FROM mt_workorder WHERE tsid = (?)'
+        c.execute(command, (tsid,))
+    conn.commit()
+
+
