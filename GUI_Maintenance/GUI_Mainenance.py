@@ -1,68 +1,84 @@
 from tkinter import *
 from tkinter import messagebox
 from datetime import datetime
+from tkinter import ttk
 
 # import database
 from db_maintenance import *
 
+
+# Generate a unique tsid
 import uuid
 
 
 GUI = Tk()
 
 GUI.title('โปรแกรมซ๋อมบำรง By Dimon')
-GUI.geometry('500x500+50+50')
+GUI.geometry('800x600+50+50')
 
 # Font
 FONT1 = ('Angsana New', 16)
 
 
-L = Label(GUI,text='ใบแจ้งซ่อม',font=FONT1)
-L.pack()
+############## TAB ##################
+Tab = ttk.Notebook(GUI)
+T1 = Frame(Tab)
+T2 = Frame(Tab)
+T3 = Frame(Tab)
+Tab.add(T1, text='ใบแจ้งซ่อม')
+Tab.add(T2, text='ดูใบแจ้งซ่อม')
+Tab.add(T3, text='สรุป')
+Tab.pack(fill=BOTH, expand=1)
 
-L = Label(GUI,text='ชื่อผู้แจ้ง',font=FONT1)
+
+
+
+L = Label(T1,text='ใบแจ้งซ่อม',font=FONT1)
+L.place(x=80, y=13)
+
+L = Label(T1,text='ชื่อผู้แจ้ง',font=FONT1)
 L.place(x=30, y=50)
 
 v_name = StringVar()
-E1 = Entry(GUI, textvariable=v_name, font=FONT1)
+E1 = ttk.Entry(T1, textvariable=v_name, font=FONT1)
 E1.place(x=150, y=50)
 
-L = Label(GUI,text='แผนก',font=FONT1)
+L = Label(T1,text='แผนก',font=FONT1)
 L.place(x=30, y=100)
 
 v_department = StringVar()
-E2 = Entry(GUI, textvariable=v_department, font=FONT1)
+E2 = ttk.Entry(T1, textvariable=v_department, font=FONT1)
 E2.place(x=150, y=100)
 
-L = Label(GUI,text='อุปกรณ์/เครื่อง',font=FONT1)
+L = Label(T1,text='อุปกรณ์/เครื่อง',font=FONT1)
 L.place(x=30, y=150)
 
 v_machine = StringVar()
-E3 = Entry(GUI, textvariable=v_machine, font=FONT1)
+E3 = ttk.Entry(T1, textvariable=v_machine, font=FONT1)
 E3.place(x=150, y=150)
 
-L = Label(GUI,text='อาการเสีย',font=FONT1)
+L = Label(T1,text='อาการเสีย',font=FONT1)
 L.place(x=30, y=200)
 
 v_problem = StringVar()
-E4 = Entry(GUI, textvariable=v_problem, font=FONT1)
+E4 = ttk.Entry(T1, textvariable=v_problem, font=FONT1)
 E4.place(x=150, y=200)
 
 
-L = Label(GUI,text='หมายเลข',font=FONT1)
+L = Label(T1,text='หมายเลข',font=FONT1)
 L.place(x=30, y=250)
 
 v_serial = StringVar()
-E5 = Entry(GUI, textvariable=v_serial, font=FONT1)
+E5 = ttk.Entry(T1, textvariable=v_serial, font=FONT1)
 E5.place(x=150, y=250)
 
 
 
-L = Label(GUI,text='หมายเลขโทรศัพท์',font=FONT1)
+L = Label(T1,text='หมายเลขโทรศัพท์',font=FONT1)
 L.place(x=30, y=300)
 
 v_phone = StringVar()
-E6 = Entry(GUI, textvariable=v_phone, font=FONT1)
+E6 = ttk.Entry(T1, textvariable=v_phone, font=FONT1)
 E6.place(x=150, y=300)
 
 def save():
@@ -89,7 +105,7 @@ def save():
             #         fw.writerow(data)
 
                 # Generate a unique tsid
-                tsid = str(uuid.uuid4())
+                tsid = 'MT' + str(uuid.uuid4().int)[:8]
                 insert_mtworkorder(tsid, name, department, machine, problem, serial, phone)
             
             else:
@@ -115,7 +131,27 @@ def save():
         
 
 
-B = Button(GUI,text='บันทึกใบแจ้งหนี้', command=save, font=FONT1)
+B = Button(T1,text='บันทึกใบแจ้งหนี้', command=save, font=FONT1)
 B.place(x=150, y=380)
+
+
+
+
+
+################################### TAB2 ##########################################
+header = ['TSID', "ชื่อ", "แผนก", "อุปกรณ์/เครื่อง", "อาการเสีย", "หมายเลข", "หมายเลขโทรศัพท์"]
+headerw = [50, 100, 100, 150, 200, 100, 100]
+
+mtworkorderlist = ttk.Treeview(T2, columns=header,show='headings', height=10)
+mtworkorderlist.pack()
+
+
+for h, w in zip(header, headerw):
+    mtworkorderlist.heading(h, text=h)
+    mtworkorderlist.column(h, width=w)
+
+
+[mtworkorderlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder()]
+
 
 GUI.mainloop() # ทำให้โปรแกรมรันตลอดเวลา
