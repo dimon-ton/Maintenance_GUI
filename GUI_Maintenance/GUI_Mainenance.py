@@ -14,7 +14,7 @@ import uuid
 GUI = Tk()
 
 GUI.title('โปรแกรมซ๋อมบำรง By Dimon')
-GUI.geometry('800x600+50+50')
+GUI.geometry('1200x800+50+50')
 
 # Font
 FONT1 = ('Angsana New', 16)
@@ -89,6 +89,7 @@ def save():
     serial = v_serial.get()
     phone = v_phone.get()
     
+    
 
     try:
         if name == '' or department == '' or machine == '' or problem == '' or serial == '' or phone == '':
@@ -107,6 +108,7 @@ def save():
                 # Generate a unique tsid
                 tsid = 'MT' + str(uuid.uuid4().int)[:8]
                 insert_mtworkorder(tsid, name, department, machine, problem, serial, phone)
+                update_table()
             
             else:
                 return
@@ -140,18 +142,180 @@ B.place(x=150, y=380)
 
 ################################### TAB2 ##########################################
 header = ['TSID', "ชื่อ", "แผนก", "อุปกรณ์/เครื่อง", "อาการเสีย", "หมายเลข", "หมายเลขโทรศัพท์"]
-headerw = [50, 100, 100, 150, 200, 100, 100]
+headerw = [100, 150, 120, 200, 200, 150, 150]
 
 mtworkorderlist = ttk.Treeview(T2, columns=header,show='headings', height=10)
-mtworkorderlist.pack()
+mtworkorderlist.pack(pady=20)
 
+# adjust font size and table larger
+style = ttk.Style()
+style.configure('Treeview.Heading', font=('Angsana New', 10, 'bold'))
+style.configure('Treeview', rowheight=25, font=('Angsana New', 15))
 
 for h, w in zip(header, headerw):
     mtworkorderlist.heading(h, text=h)
-    mtworkorderlist.column(h, width=w)
+    mtworkorderlist.column(h, width=w, anchor='center')
 
 
-[mtworkorderlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder()]
+mtworkorderlist.column('TSID', anchor='w')
 
+
+def update_table():
+    mtworkorderlist.delete(*mtworkorderlist.get_children()) # clear records in Treeview
+    [mtworkorderlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder()]
+
+
+
+# page for editing record
+def editPage_mtworkorder(event=None):
+
+    select  = mtworkorderlist.selection()
+    output = mtworkorderlist.item(select)
+
+
+    op = output['values']
+
+    tsid = op[0]
+    name = op[1]
+    department = op[2]
+    machine = op[3]
+    problem = op[4]
+    serial = op[5]
+    phone = f'0{op[6]}'
+    
+
+    GUI2 = Toplevel()
+    GUI2.title('หน้าแก้ไขข้อมูลใบแจ้งซ่อม')
+    GUI2.geometry('500x500')
+
+
+    L = Label(GUI2,text='ใบแจ้งซ่อม',font=FONT1)
+    L.place(x=80, y=13)
+
+    L = Label(GUI2,text='ชื่อผู้แจ้ง',font=FONT1)
+    L.place(x=30, y=50)
+
+    v_name2 = StringVar()
+    v_name2.set(name)
+    E1 = ttk.Entry(GUI2, textvariable=v_name2, font=FONT1)
+    E1.place(x=150, y=50)
+
+    L = Label(GUI2,text='แผนก',font=FONT1)
+    L.place(x=30, y=100)
+
+    v_department2 = StringVar()
+    v_department2.set(department)
+    E2 = ttk.Entry(GUI2, textvariable=v_department2, font=FONT1)
+    E2.place(x=150, y=100)
+
+    L = Label(GUI2,text='อุปกรณ์/เครื่อง',font=FONT1)
+    L.place(x=30, y=150)
+
+    v_machine2 = StringVar()
+    v_machine2.set(machine)
+    E3 = ttk.Entry(GUI2, textvariable=v_machine2, font=FONT1)
+    E3.place(x=150, y=150)
+
+    L = Label(GUI2,text='อาการเสีย',font=FONT1)
+    L.place(x=30, y=200)
+
+    v_problem2 = StringVar()
+    v_problem2.set(problem)
+    E4 = ttk.Entry(GUI2, textvariable=v_problem2, font=FONT1)
+    E4.place(x=150, y=200)
+
+
+    L = Label(GUI2,text='หมายเลข',font=FONT1)
+    L.place(x=30, y=250)
+
+    v_serial2 = StringVar()
+    v_serial2.set(serial)
+    E5 = ttk.Entry(GUI2, textvariable=v_serial2, font=FONT1)
+    E5.place(x=150, y=250)
+
+
+
+    L = Label(GUI2,text='หมายเลขโทรศัพท์',font=FONT1)
+    L.place(x=30, y=300)
+
+    v_phone2 = StringVar()
+    v_phone2.set(phone)
+    E6 = ttk.Entry(GUI2, textvariable=v_phone2, font=FONT1)
+    E6.place(x=150, y=300)
+
+    def update():
+        name = v_name2.get()
+        department = v_department2.get()
+        machine = v_machine2.get()
+        problem = v_problem2.get()
+        serial = v_serial2.get()
+        phone = v_phone2.get()
+        
+        
+
+        try:
+            if name == '' or department == '' or machine == '' or problem == '' or serial == '' or phone == '':
+                messagebox.showwarning('Error','กรุณากรอกข้อมูลให้ครบ')
+            else:
+
+                if messagebox.askyesno('หน้าต่างยืนยันการเปลี่ยนแปลง', 'คุณต้องการบันทึกข้อมูลการเปลี่ยนแปลงใช่หรือไม่?'):
+                    dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+                    update_mtworkorder(tsid, 'name', name)
+                    update_mtworkorder(tsid, 'department', department)
+                    update_mtworkorder(tsid, 'machine', machine)
+                    update_mtworkorder(tsid, 'problem', problem)
+                    update_mtworkorder(tsid, 'serial', serial)
+                    update_mtworkorder(tsid, 'phone', phone)
+
+                    update_table()
+                    GUI2.destroy()
+                
+                else:
+                    return
+                    
+                text = f'วันที่: {dt}\n'
+                text += f'ชื่อ: {name}\n'
+                text += f'แผนก: {department}\n'
+                text += f'อุปกรณ์/เครื่อง: {machine}\n'
+                text += f'อาการเสีย: {problem}\n'
+                text += f'หมายเลข: {serial}\n'
+                text += f'หมายเลขโทรศัพท์: {phone}\n'
+                messagebox.showinfo('ปรับปรุงข้อมูลสำเร็จ', text)
+
+        except Exception as e:
+            messagebox.showerror('Error', str(e))
+            
+
+
+    B = Button(GUI2,text='ปรับปรุงใบแจ้งหนี้', command=update, font=FONT1)
+    B.place(x=150, y=380)
+
+
+
+    GUI2.mainloop()
+
+
+
+
+mtworkorderlist.bind('<Double-1>', editPage_mtworkorder)
+
+
+def Delete_mtworkorder(event=None):
+
+    select  = mtworkorderlist.selection()
+    output = mtworkorderlist.item(select)
+    tsid = output['values'][0]
+
+    check = messagebox.askyesno('ยืนยันการลบ', 'คุณต้องการลบข้อมูลใช่หรือไม่')
+
+    if check:
+        delete_mtworkorder(tsid)
+        update_table()
+
+
+mtworkorderlist.bind('<Delete>', Delete_mtworkorder)
+
+update_table()
 
 GUI.mainloop() # ทำให้โปรแกรมรันตลอดเวลา
