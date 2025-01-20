@@ -21,13 +21,34 @@ FONT1 = ('Angsana New', 16)
 
 
 ############## TAB ##################
+# s = ttk.Style()
+# s.theme_create('MyStyle', parent='alt', settings={
+#     'TNotebook':{'configure':{'tabmargins':[2,5,2,0]}},
+#     'TNotebook.Tab':{'configure':{'padding':[10,5], 'font':('Angsana New', '12', 'bold')}}
+# })
+# s.theme_use('MyStyle')
+
+
+
+
+# Create a Style object
+style = ttk.Style()
+
+# Configure the font for the 'TNotebook.Tab' element
+style.configure("TNotebook.Tab", font=("Angsana New", 13), padding=[10,5])
+
+
+
+
 Tab = ttk.Notebook(GUI)
 T1 = Frame(Tab)
 T2 = Frame(Tab)
 T3 = Frame(Tab)
+T4 = Frame(Tab)
 Tab.add(T1, text='ใบแจ้งซ่อม')
 Tab.add(T2, text='ดูใบแจ้งซ่อม')
-Tab.add(T3, text='สรุป')
+Tab.add(T3, text='อนุมัติให้ซ่อมแล้ว')
+Tab.add(T4, text='รายการซ่อมเสร็จแล้ว')
 Tab.pack(fill=BOTH, expand=1)
 
 

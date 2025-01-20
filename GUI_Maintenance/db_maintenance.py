@@ -24,15 +24,16 @@ c.execute("""
                 machine TEXT,
                 problem TEXT,
                 serial TEXT,
-                phone TEXT)""")
+                phone TEXT,
+                status TEXT)""")
 
 
 
 def insert_mtworkorder(tsid, name, department, machine, problem, serial, phone):
     # CREATE
     with conn:
-        command = 'INSERT INTO mt_workorder VALUES (?,?,?,?,?,?,?,?)'
-        c.execute(command, (None, tsid, name, department, machine, problem, serial, phone))
+        command = 'INSERT INTO mt_workorder VALUES (?,?,?,?,?,?,?,?,?)'
+        c.execute(command, (None, tsid, name, department, machine, problem, serial, phone, 'new'))
 
     conn.commit()
 
