@@ -14,7 +14,7 @@ import uuid
 GUI = Tk()
 
 GUI.title('โปรแกรมซ๋อมบำรง By Dimon')
-GUI.geometry('1200x800+50+50')
+GUI.geometry('1300x800+50+50')
 
 # Font
 FONT1 = ('Angsana New', 16)
@@ -162,8 +162,8 @@ B.place(x=150, y=380)
 
 
 ################################### TAB2 ##########################################
-header = ['TSID', "ชื่อ", "แผนก", "อุปกรณ์/เครื่อง", "อาการเสีย", "หมายเลข", "หมายเลขโทรศัพท์"]
-headerw = [100, 150, 120, 200, 200, 150, 150]
+header = ['TSID', "ชื่อ", "แผนก", "อุปกรณ์/เครื่อง", "อาการเสีย", "หมายเลข", "หมายเลขโทรศัพท์", "สถานะ"]
+headerw = [100, 150, 120, 200, 200, 150, 150, 120]
 
 mtworkorderlist = ttk.Treeview(T2, columns=header,show='headings', height=10)
 mtworkorderlist.pack(pady=20)
