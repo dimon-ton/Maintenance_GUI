@@ -183,7 +183,7 @@ mtworkorderlist.column('TSID', anchor='w')
 
 def update_table():
     mtworkorderlist.delete(*mtworkorderlist.get_children()) # clear records in Treeview
-    [mtworkorderlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder()]
+    [mtworkorderlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder_status('new')]
 
 
 
@@ -325,18 +325,91 @@ mtworkorderlist.bind('<Double-1>', editPage_mtworkorder)
 def Delete_mtworkorder(event=None):
 
     select  = mtworkorderlist.selection()
-    output = mtworkorderlist.item(select)
-    tsid = output['values'][0]
+    
+    if select:
+        output = mtworkorderlist.item(select)
+        tsid = output['values'][0]
 
-    check = messagebox.askyesno('ยืนยันการลบ', 'คุณต้องการลบข้อมูลใช่หรือไม่')
+        check = messagebox.askyesno('ยืนยันการลบ', 'คุณต้องการลบข้อมูลใช่หรือไม่')
 
-    if check:
-        delete_mtworkorder(tsid)
-        update_table()
+        if check:
+            delete_mtworkorder(tsid)
+            update_table()
 
 
 mtworkorderlist.bind('<Delete>', Delete_mtworkorder)
 
+
+########### right click menu ##################
+def Approved():
+    select  = mtworkorderlist.selection()
+    
+    if select:
+        output = mtworkorderlist.item(select)
+        tsid = output['values'][0]
+
+        check = messagebox.askyesno('ยืนยันการเปลี่ยนสถานะ', 'คุณต้องการเปลี่ยนสถานะใช่หรือไม่')
+
+        if check:
+            update_mtworkorder(tsid, 'status', 'approved')
+            update_table()
+            update_table_approved_wlist()
+
+
+
+
+approved_menu = Menu(GUI, tearoff=0)
+approved_menu.add_command(label='Approved', command=Approved)
+approved_menu.add_command(label='delete', command=Delete_mtworkorder)
+
+
+def popup(event):
+    approved_menu.post(event.x_root, event.y_root)
+
+
+mtworkorderlist.bind('<Button-3>', popup)
+
+
+######################## TAB3 ################################
+
+class WorkorderList(ttk.Treeview):
+    def __init__(self, GUI):
+        header = ['TSID', "ชื่อ", "แผนก", "อุปกรณ์/เครื่อง", "อาการเสีย", "หมายเลข", "หมายเลขโทรศัพท์", "สถานะ"]
+        headerw = [100, 150, 120, 200, 200, 150, 150, 120]
+        ttk.Treeview.__init__(self, GUI, columns=header,show='headings', height=10)
+        for h, w in zip(header, headerw):
+            self.heading(h, text=h)
+            self.column(h, width=w, anchor='center')
+
+    def insertdata(self, values):
+        self.insert('', 'end', values=values)
+
+
+
+class MenuText(ttk.Label):
+    def __init__(self, GUI, text="example", size=20):
+        ttk.Label.__init__(self, GUI, text=text, font=('Angsana New', size, 'bold'), foreground='black')
+
+
+
+# Table of Approved List
+
+L = MenuText(T3, 'ตารางแสดงอนุมัติให้ซ่อม', 30)
+L.pack(pady=(15,0))
+
+approved_wlist = WorkorderList(T3)
+approved_wlist.pack(pady=15)
+
+
+
+def update_table_approved_wlist():
+    approved_wlist.delete(*approved_wlist.get_children()) # clear records in Treeview
+    [approved_wlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder_status('approved')]
+
+
+
+
 update_table()
+update_table_approved_wlist()
 
 GUI.mainloop() # ทำให้โปรแกรมรันตลอดเวลา

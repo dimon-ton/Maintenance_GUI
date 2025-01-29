@@ -6,6 +6,14 @@ GUI = Tk()
 GUI.geometry('500x500')
 
 
+class RedText(ttk.Label):
+    def __init__(self, GUI, text="example", size=20):
+        ttk.Label.__init__(self, GUI, text=text, font=('Angsana New', size, 'bold'), foreground='red')
+
+
+L2 = RedText(GUI, text='สวัสดีจ้า', size=40)
+L2.pack()
+
 
 class WorkorderList(ttk.Treeview):
     def __init__(self, GUI):

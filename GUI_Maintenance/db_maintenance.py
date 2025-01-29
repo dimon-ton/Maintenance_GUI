@@ -66,12 +66,18 @@ def delete_mtworkorder(tsid):
 
 
 
+def view_mtworkorder_status(status):
+    with conn:
+        command = 'SELECT * FROM mt_workorder WHERE status = ?'
+        c.execute(command, (status, ))
+        result = c.fetchall()
 
+    return result
 
 
 
 
 
 if __name__ == '__main__':
-    result = view_mtworkorder()
+    result = view_mtworkorder_approved()
     print(result)
