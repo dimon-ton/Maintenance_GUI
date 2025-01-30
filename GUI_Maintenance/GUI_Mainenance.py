@@ -11,6 +11,8 @@ from db_maintenance import *
 import uuid
 
 
+from tkcalendar import Calendar, DateEntry
+
 GUI = Tk()
 
 GUI.title('โปรแกรมซ๋อมบำรง By Dimon')
@@ -405,6 +407,71 @@ approved_wlist.pack(pady=15)
 def update_table_approved_wlist():
     approved_wlist.delete(*approved_wlist.get_children()) # clear records in Treeview
     [approved_wlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder_status('approved')]
+
+
+
+
+def Newnote(event):
+    GUI3 = Toplevel()
+    GUI3.geometry('500x500')
+    GUI3.title('รายละเอียดการซ๋อม')
+
+    select  = approved_wlist.selection()
+    
+    if select:
+        output = approved_wlist.item(select)
+        tsid = output['values'][0]
+
+    FONT4 = (None, 15)
+    L = ttk.Label(GUI3, text="รายละเอียดการซ่อม (tsid): {}".format(tsid), font=FONT4)
+    L.pack(pady=10)
+
+
+
+    
+    v_date = StringVar()
+    v_detail = StringVar()
+    v_other = StringVar()
+
+
+
+    L = ttk.Label(GUI3, text="วันที่เริ่ม", font=FONT4)
+    L.pack(pady=10)
+
+
+    cal = DateEntry(GUI3, width=18, background='white', foreground='black', borderwidth=1, year=2025)
+    cal.configure(showweeknumbers=False)  # Hide week numbers
+    cal.configure(date_pattern='y-mm-dd')  # Set the date format
+    cal.configure(font=FONT4)  # Set the font to match other Entry widgets
+    cal.configure(state='readonly')  # Make it readonly to prevent manual editing
+    cal.pack()
+
+
+    L = ttk.Label(GUI3, text="รายละเอียดงานซ่อม", font=FONT4)
+    L.pack(pady=10)
+    E2 = ttk.Entry(GUI3, textvariable=v_detail, font=FONT4)
+    E2.pack()
+
+    L = ttk.Label(GUI3, text="หมายเหตุ", font=FONT4)
+    L.pack(pady=10)
+    E3 = ttk.Entry(GUI3, textvariable=v_other, font=FONT4)
+    E3.pack()
+
+    def show_date():
+        selected_date = cal.get_date()
+        print('selected date:', selected_date)
+
+    
+    B = ttk.Button(GUI3, text='save', command=show_date)
+    B.pack(pady=20)
+
+
+
+    GUI3.mainloop()
+
+
+
+approved_wlist.bind('<Double-1>', Newnote)
 
 
 
