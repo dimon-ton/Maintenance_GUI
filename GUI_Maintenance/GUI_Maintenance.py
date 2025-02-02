@@ -16,7 +16,20 @@ from tkcalendar import Calendar, DateEntry
 GUI = Tk()
 
 GUI.title('โปรแกรมซ๋อมบำรง By Dimon')
-GUI.geometry('1300x800+50+50')
+
+w = 1400
+h = 600
+
+ws = GUI.winfo_screenwidth()
+hs = GUI.winfo_screenheight()
+
+x = (ws/2)-(w/2)
+y = (hs/2)-(h/2)
+
+GUI.geometry(f'{w}x{h}+{x:.0f}+{y:.0f}')
+
+
+# GUI.geometry('1300x800+50+50')
 
 # Font
 FONT1 = ('Angsana New', 16)
@@ -413,7 +426,7 @@ def update_table_approved_wlist():
 
 def Newnote(event):
     GUI3 = Toplevel()
-    GUI3.geometry('500x500')
+    GUI3.geometry('500x580')
     GUI3.title('รายละเอียดการซ๋อม')
 
     select  = approved_wlist.selection()
@@ -449,12 +462,12 @@ def Newnote(event):
 
     L = ttk.Label(GUI3, text="รายละเอียดงานซ่อม", font=FONT4)
     L.pack(pady=10)
-    E2 = ttk.Entry(GUI3, textvariable=v_detail, font=FONT4)
+    E2 = Text(GUI3, font=FONT4, width=35, height=5)
     E2.pack()
 
     L = ttk.Label(GUI3, text="หมายเหตุ", font=FONT4)
     L.pack(pady=10)
-    E3 = ttk.Entry(GUI3, textvariable=v_other, font=FONT4)
+    E3 = Text(GUI3, font=FONT4, width=35, height=5)
     E3.pack()
 
     def show_date():
@@ -462,8 +475,13 @@ def Newnote(event):
         print('selected date:', selected_date)
 
     
-    B = ttk.Button(GUI3, text='save', command=show_date)
-    B.pack(pady=20)
+    def SaveDetail():
+       print(E2.get('1.0', END)) 
+
+
+
+    B = ttk.Button(GUI3, text='save', command=SaveDetail)
+    B.pack(pady=(60,0))
 
 
 
