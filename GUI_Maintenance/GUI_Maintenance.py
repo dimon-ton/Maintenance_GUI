@@ -435,6 +435,9 @@ def Newnote(event):
         output = approved_wlist.item(select)
         tsid = output['values'][0]
 
+
+
+
     FONT4 = (None, 15)
     L = ttk.Label(GUI3, text="รายละเอียดการซ่อม (tsid): {}".format(tsid), font=FONT4)
     L.pack(pady=10)
@@ -465,18 +468,35 @@ def Newnote(event):
     E2 = Text(GUI3, font=FONT4, width=35, height=5)
     E2.pack()
 
+
     L = ttk.Label(GUI3, text="หมายเหตุ", font=FONT4)
     L.pack(pady=10)
     E3 = Text(GUI3, font=FONT4, width=35, height=5)
     E3.pack()
 
-    def show_date():
-        selected_date = cal.get_date()
-        print('selected date:', selected_date)
 
+    # get data from newnote
+    data = view_mtnote_tsid(tsid)
+
+    print(data)
+
+    if data != None:
+        cal.set_date(data[2])
+        E2.insert(END, data[3])
+        E3.insert(END, data[4])
     
     def SaveDetail():
-       print(E2.get('1.0', END)) 
+
+        date_start = cal.get()
+        detail = E2.get('1.0', END).strip()
+        other = E3.get('1.0', END).strip()
+        
+        data = view_mtnote_tsid(tsid)
+
+        if data == None:
+            insert_mtnote(tsid, date_start, detail, other)
+            messagebox.showinfo('save dialog box','saved successfully')
+
 
 
 

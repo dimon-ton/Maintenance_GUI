@@ -1,6 +1,5 @@
 import sqlite3
 
-
 '''
  name = v_name.get()
     department = v_department.get()

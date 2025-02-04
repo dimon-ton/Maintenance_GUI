@@ -108,7 +108,7 @@ def view_mtnote():
 
 
 
-def view_mtnote(tsid):
+def view_mtnote_tsid(tsid):
 
     with conn:
         command = 'SELECT * FROM mt_note WHERE tsid=(?)'
@@ -138,4 +138,6 @@ def delete_mtnote(tsid):
 
 
 if __name__ == '__main__':
-    pass
+    alldata = view_mtnote()
+    print(alldata)
+    print(view_mtnote_tsid('MT12127779'))
