@@ -475,6 +475,8 @@ def Newnote(event):
     E3.pack()
 
 
+    GUI3.bind('<F1>', lambda x: E3.focus())
+    
     # get data from newnote
     data = view_mtnote_tsid(tsid)
 
@@ -485,18 +487,25 @@ def Newnote(event):
         E2.insert(END, data[3])
         E3.insert(END, data[4])
     
-    def SaveDetail():
-
+    def SaveDetail(event=None):
+        
         date_start = cal.get()
         detail = E2.get('1.0', END).strip()
         other = E3.get('1.0', END).strip()
         
         data = view_mtnote_tsid(tsid)
 
+
         if data == None:
             insert_mtnote(tsid, date_start, detail, other)
             messagebox.showinfo('save dialog box','saved successfully')
+        else:
+            update_mtnote(tsid, 'date_start', date_start)
+            update_mtnote(tsid, 'detail', detail)
+            update_mtnote(tsid, 'other', other)
+            messagebox.showinfo('update dialog box','updated successfully' )
 
+        GUI3.destroy()
 
 
 
@@ -511,10 +520,50 @@ def Newnote(event):
 
 approved_wlist.bind('<Double-1>', Newnote)
 
+########### right click menu ##################
+def Done():
+    select  = approved_wlist.selection()
+    
+    if select:
+        output = approved_wlist.item(select)
+        tsid = output['values'][0]
+
+        check = messagebox.askyesno('ยืนยันการเปลี่ยนสถานะ', 'คุณต้องการเปลี่ยนสถานะใช่หรือไม่')
+
+        if check:
+            update_mtworkorder(tsid, 'status', 'done')
+            update_table()
+            update_table_approved_wlist()
+            update_table_done_wlist()
 
 
+done_menu = Menu(GUI, tearoff=0)
+done_menu.add_command(label='done', command=Done)
+
+def popup(event):
+    done_menu.post(event.x_root, event.y_root)
+
+
+approved_wlist.bind('<Button-3>', popup)
+
+########################## TAB 4 ###########################
+
+# Table of Approved List
+
+L = MenuText(T4, 'ตารางแสดงรายการซ่อมเสร็จแล้ว', 30)
+L.pack(pady=(15,0))
+
+done_wlist = WorkorderList(T4)
+done_wlist.pack(pady=15)
+
+
+
+def update_table_done_wlist():
+    done_wlist.delete(*done_wlist.get_children()) # clear records in Treeview
+    [done_wlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder_status('done')]
 
 update_table()
 update_table_approved_wlist()
+update_table_done_wlist()
 
 GUI.mainloop() # ทำให้โปรแกรมรันตลอดเวลา
