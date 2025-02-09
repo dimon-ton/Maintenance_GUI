@@ -2,37 +2,40 @@ from tkinter import *
 from tkinter import messagebox
 from datetime import datetime
 from tkinter import ttk
+from allpage import *
 
 # import database
 from db_maintenance import *
 
-
 # Generate a unique tsid
 import uuid
-
-
 from tkcalendar import Calendar, DateEntry
 
-GUI = Tk()
+def center_windows(w, h):
 
+    ws = GUI.winfo_screenwidth()
+    hs = GUI.winfo_screenheight()
+
+    x = (ws/2)-(w/2)
+    y = (hs/2)-(h/2)
+
+    return f'{w}x{h}+{x:.0f}+{y:.0f}'
+
+
+GUI = Tk()
 GUI.title('โปรแกรมซ๋อมบำรง By Dimon')
 
 w = 1400
 h = 600
 
-ws = GUI.winfo_screenwidth()
-hs = GUI.winfo_screenheight()
+GUI.geometry(center_windows(w, h))
 
-x = (ws/2)-(w/2)
-y = (hs/2)-(h/2)
-
-GUI.geometry(f'{w}x{h}+{x:.0f}+{y:.0f}')
 
 
 # GUI.geometry('1300x800+50+50')
 
 # Font
-FONT1 = ('Angsana New', 16)
+FONT1 = ('Angsana New', 18)
 
 
 ############## TAB ##################
@@ -53,14 +56,51 @@ style = ttk.Style()
 style.configure("TNotebook.Tab", font=("Angsana New", 13), padding=[10,5])
 
 
+############################################### Menu Bar ###################################################
+# Main Menu
+menubar = Menu(GUI)
+GUI.config(menu=menubar)
+# File
+menu_file = Menu(menubar, tearoff=0)
+menubar.add_cascade(label='File', menu=menu_file)
 
+menu_file.add_command(label='Sync')
+menu_file.add_command(label='Update Database')
+
+def Report():
+    messagebox.showinfo('Report', 'ตอนนี้ Report ยังไม่พร้อมใช้งาน')
+
+sub_menu = Menu(menu_file, tearoff=0)
+sub_menu.add_command(label='config database')
+sub_menu.add_command(label='config report', command=Report)
+
+menu_file.add_cascade(label='Config', menu=sub_menu)
+
+menu_file.add_separator()
+
+menu_file.add_command(label='Exit', accelerator='Ctrl + Q', command=lambda: GUI.quit())
+GUI.bind('<Control-q>', lambda x: GUI.quit())
+
+
+# Help
+
+menu_help = Menu(menubar, tearoff=0)
+menubar.add_cascade(label='Help', menu=menu_help)
+
+menu_help.add_command(label='About')
+menu_help.add_command(label='Update Software')
+menu_help.add_command(label='Contact Developer')
+menu_help.add_command(label='Donate')
+
+
+############################################### Notebook ###################################################
 
 Tab = ttk.Notebook(GUI)
 T1 = Frame(Tab)
 T2 = Frame(Tab)
 T3 = Frame(Tab)
 T4 = Frame(Tab)
-Tab.add(T1, text='ใบแจ้งซ่อม')
+Tab.add(T1, text='เมนูหลัก')
 Tab.add(T2, text='ดูใบแจ้งซ่อม')
 Tab.add(T3, text='อนุมัติให้ซ่อมแล้ว')
 Tab.add(T4, text='รายการซ่อมเสร็จแล้ว')
@@ -68,113 +108,85 @@ Tab.pack(fill=BOTH, expand=1)
 
 
 
+######################## FUNCTION ###########################
+def update_table():
+    mtworkorderlist.delete(*mtworkorderlist.get_children()) # clear records in Treeview
+    [mtworkorderlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder_status('new')]
 
-L = Label(T1,text='ใบแจ้งซ่อม',font=FONT1)
-L.place(x=80, y=13)
+########################### MTWorkorder ################################
+def WindowMTWorkorder():
+    GUI2 = Toplevel()
+    GUI2.geometry(center_windows(600, 500))
+    GUI2.title('ใบแจ้งซ่อม')
+    GUI2.transient(GUI) # set Toplevel only in front of main GUI
+    GUI2.grab_set() # disable main GUI while Toplevel is on
 
-L = Label(T1,text='ชื่อผู้แจ้ง',font=FONT1)
-L.place(x=30, y=50)
+    F1 = MTWorkorder(GUI2, insert_mtworkorder, update_table)
+    F1.pack()
 
-v_name = StringVar()
-E1 = ttk.Entry(T1, textvariable=v_name, font=FONT1)
-E1.place(x=150, y=50)
+    GUI2.mainloop()
 
-L = Label(T1,text='แผนก',font=FONT1)
-L.place(x=30, y=100)
-
-v_department = StringVar()
-E2 = ttk.Entry(T1, textvariable=v_department, font=FONT1)
-E2.place(x=150, y=100)
-
-L = Label(T1,text='อุปกรณ์/เครื่อง',font=FONT1)
-L.place(x=30, y=150)
-
-v_machine = StringVar()
-E3 = ttk.Entry(T1, textvariable=v_machine, font=FONT1)
-E3.place(x=150, y=150)
-
-L = Label(T1,text='อาการเสีย',font=FONT1)
-L.place(x=30, y=200)
-
-v_problem = StringVar()
-E4 = ttk.Entry(T1, textvariable=v_problem, font=FONT1)
-E4.place(x=150, y=200)
-
-
-L = Label(T1,text='หมายเลข',font=FONT1)
-L.place(x=30, y=250)
-
-v_serial = StringVar()
-E5 = ttk.Entry(T1, textvariable=v_serial, font=FONT1)
-E5.place(x=150, y=250)
+FBM1 = Frame(T1)
+FBM1.place(x=50, y=45)
+icon_bm1 = PhotoImage(file='mtworkorder.png')
+BM1 = ttk.Button(FBM1, text='ใบแจ้งซ่อม', image=icon_bm1, compound='top',command=WindowMTWorkorder)
+BM1.pack(ipadx=30, ipady=15, pady=(20,0))
 
 
 
-L = Label(T1,text='หมายเลขโทรศัพท์',font=FONT1)
-L.place(x=30, y=300)
+########################### Department ################################
+def WindowDepartment():
+    GUI3 = Toplevel()
+    GUI3.geometry(center_windows(600, 500))
+    GUI3.title('เพิ่ม/ลด แผนก')
+    GUI3.transient(GUI)
+    GUI3.grab_set()
 
-v_phone = StringVar()
-E6 = ttk.Entry(T1, textvariable=v_phone, font=FONT1)
-E6.place(x=150, y=300)
+    MenuText(GUI3, 'เพิ่ม/ลด แผนก', 20).pack(pady=(20,20))
 
-def save():
-    name = v_name.get()
-    department = v_department.get()
-    machine = v_machine.get()
-    problem = v_problem.get()
-    serial = v_serial.get()
-    phone = v_phone.get()
-    
-    
+    v_dep_code = StringVar()
 
-    try:
-        if name == '' or department == '' or machine == '' or problem == '' or serial == '' or phone == '':
-            messagebox.showwarning('Error','กรุณากรอกข้อมูลให้ครบ')
-        else:
-
-            if messagebox.askyesno('ยืนยันการบันทึก', 'คุณต้องการบันทึกข้อมูลใช่หรือไม่?'):
-                dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    E1 = ET(GUI3, label='รหัสแผนก', textvariable=v_dep_code)
+    E1.place(x=50, y=50)
 
 
-            #     with open('data.csv', 'a', newline='', encoding='utf-8') as f:
-            #         fw = csv.writer(f)
-            #         data = [dt, name, department, machine, problem, serial, phone]
-            #         fw.writerow(data)
+    v_dep_title = StringVar()
 
-                # Generate a unique tsid
-                tsid = 'MT' + str(uuid.uuid4().int)[:8]
-                insert_mtworkorder(tsid, name, department, machine, problem, serial, phone)
-                update_table()
-            
-            else:
-                return
-                
-            text = f'วันที่: {dt}\n'
-            text += f'ชื่อ: {name}\n'
-            text += f'แผนก: {department}\n'
-            text += f'อุปกรณ์/เครื่อง: {machine}\n'
-            text += f'อาการเสีย: {problem}\n'
-            text += f'หมายเลข: {serial}\n'
-            text += f'หมายเลขโทรศัพท์: {phone}\n'
-            messagebox.showinfo('บันทึกข้อมูลสำเร็จ', text)
-
-            v_name.set('')
-            v_department.set('')
-            v_machine.set('')
-            v_problem.set('')
-            v_serial.set('')
-            v_phone.set('')
-    except Exception as e:
-        messagebox.showerror('Error', str(e))
-        
+    E2 = ET(GUI3, label='ชื่อแผนก', textvariable=v_dep_title)
+    E2.place(x=50, y=100)
 
 
-B = Button(T1,text='บันทึกใบแจ้งหนี้', command=save, font=FONT1)
-B.place(x=150, y=380)
+
+    def saveDep():
+        dep_code = v_dep_code.get()
+        dep_title = v_dep_title.get()
+        insert_department(dep_code, dep_title)
+        v_dep_code.set('')
+        v_dep_title.set('')
+        E1.E1.focus()
+
+    B = ttk.Button(GUI3, text='บันทึก', command=saveDep)
+    B.place(x=50, y=190, width=100, height=40)
+
+    # Apply font size and style
+    B.config(style="Custom.TButton")
+
+    style = ttk.Style()
+    style.configure("Custom.TButton", font=("Angsana New", 14))  # Adjust font family and size
+
+    GUI3.mainloop()
+
+FBM1 = Frame(T1)
+FBM1.place(x=200, y=45)
+icon_bm2 = PhotoImage(file='department.png')
+BM1 = ttk.Button(FBM1, text='สร้างแผนก', image=icon_bm2, compound='top', command=WindowDepartment)
+BM1.pack(ipadx=30, ipady=15, pady=(20,0))
 
 
 
 
+# F1 = MTWorkorder(T1, insert_mtworkorder, update_table)
+# F1.pack()
 
 ################################### TAB2 ##########################################
 header = ['TSID', "ชื่อ", "แผนก", "อุปกรณ์/เครื่อง", "อาการเสีย", "หมายเลข", "หมายเลขโทรศัพท์", "สถานะ"]
@@ -194,11 +206,6 @@ for h, w in zip(header, headerw):
 
 
 mtworkorderlist.column('TSID', anchor='w')
-
-
-def update_table():
-    mtworkorderlist.delete(*mtworkorderlist.get_children()) # clear records in Treeview
-    [mtworkorderlist.insert('', 'end', values=r[1:]) for r in view_mtworkorder_status('new')]
 
 
 
@@ -404,6 +411,18 @@ class WorkorderList(ttk.Treeview):
 class MenuText(ttk.Label):
     def __init__(self, GUI, text="example", size=20):
         ttk.Label.__init__(self, GUI, text=text, font=('Angsana New', size, 'bold'), foreground='black')
+
+
+
+class ET(Frame):
+    def __init__(self, GUI, label, textvariable, FONT=('Angsana New', 15)):
+        Frame.__init__(self, GUI, width=500, height=500)
+
+        self.L1 = ttk.Label(self, text=label, font=FONT)
+        self.L1.place(x=0, y=20)
+        self.E1 = ttk.Entry(self, textvariable=textvariable, font=FONT)
+        self.E1.place(x=90, y=20)
+
 
 
 
