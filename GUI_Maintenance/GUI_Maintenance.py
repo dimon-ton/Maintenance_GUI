@@ -35,7 +35,7 @@ GUI.geometry(center_windows(w, h))
 # GUI.geometry('1300x800+50+50')
 
 # Font
-FONT1 = ('Angsana New', 18)
+FONT1 = ('Angsana New', 14)
 
 
 ############## TAB ##################
@@ -232,8 +232,8 @@ def editPage_mtworkorder(event=None):
     GUI2.geometry('500x500')
 
 
-    L = Label(GUI2,text='ใบแจ้งซ่อม',font=FONT1)
-    L.place(x=80, y=13)
+    L = Label(GUI2,text='ใบแจ้งซ่อม',font=('Angsana New',18))
+    L.place(x=200, y=13)
 
     L = Label(GUI2,text='ชื่อผู้แจ้ง',font=FONT1)
     L.place(x=30, y=50)
