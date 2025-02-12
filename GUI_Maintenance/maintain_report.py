@@ -90,12 +90,40 @@ class Report(object):
                 [CH1, CH2, CH3, CH4, CH5, CH6, CH7, CH8]
             ]
 
+        # Data of table
+        textlist = datatext
+        count = len(textlist)
+
+        for i in range(count):
+            t1 = Paragraph("<font name='normalFont'>{}</font>".format(textlist[i][0]), styleNormal)
+            t2 = Paragraph("<font name='normalFont'>{}</font>".format(textlist[i][1]), styleNormal)
+            t3 = Paragraph("<font name='normalFont'>{}</font>".format(textlist[i][2]), styleNormal)
+            t4 = Paragraph("<font name='normalFont'>{}</font>".format(textlist[i][3]), styleNormal)
+            t5 = Paragraph("<font name='normalFont'>{}</font>".format(textlist[i][4]), styleNormal)
+            t6 = Paragraph("<font name='normalFont'>{}</font>".format(textlist[i][5]), styleNormal)
+            t7 = Paragraph("<font name='normalFont'>{}</font>".format(textlist[i][6]), styleNormal)
+            t8 = Paragraph("<font name='normalFont'>{}</font>".format(textlist[i][7]), styleNormal)
+
+            data.append([t1, t2, t3, t4, t5, t6, t7, t8])
+
+        # table line full A4
+        lineoftable = 38
+        count2 = len(data)
+        countf = lineoftable - count2
+
+        for i in range(countf):
+            blank = ['', '', '', '', '', '', '', '']
+
+            if count < lineoftable:
+                data.append(blank)
 
         tableThatSplitsOverPages = Table(data, [2 * cm, 2.5 * cm, 2.5 * cm, 4 * cm, 1.8 * cm, 1.8 * cm, 2.2 * cm, 1.5 * cm], repeatRows=1)
         tableStyle = TableStyle(
             [
                 ('BOX', (0, 0), (-1, -1), 1, colors.black),
-                ('INNERGRID', (0, 0), (-1, -1), 1, colors.black)
+                ('INNERGRID', (0, 0), (-1, -1), 1, colors.black),
+                ('FONTNAME', (0, 0), (-1, 0), 'boldFont'),
+                ('SPAN', (0, 0), (-1, 0))
             ]
         )
 
@@ -108,7 +136,11 @@ class Report(object):
 if __name__ == '__main__':
 
     report = Report()
-    data = []
+    data = [
+        ['123456789101', 'ขาว', 'ช่าง', 'ลำโพง', 'ไม่ดัง', 'A111', '0986523652', 'done'],
+        ['123456789103', 'แดง', 'IT', 'หน้าจอ', 'ไม่ติด', 'A111', '0986523652', 'done'],
+        ['123456789102', 'ดำ', 'ช่าง', 'ลำโพง', 'ไม่ดัง', 'A111', '0986523652', 'done']
+    ]
     report.createPDF('test.pdf', data)
     print('Done!')
     Popen('test.pdf', shell=True)
